@@ -1,5 +1,5 @@
 #include "BoardState.h"
-
+#include <iostream>
 vector<vector<bool>> BoardState::GetBoard()
 {
 	return _board;
@@ -23,9 +23,10 @@ void BoardState::GenerateBoard()
 
 	for (int i = 0; i < _n; i++)
 	{
-		int queenIndex = rand() % 21;
+		int queenIndex = rand() % _n;
 		_board[queenIndex][i] = true;
 	}
+	_qPos = FindQueenPositions();
 }
 
 int BoardState::GetHVal()
@@ -33,133 +34,150 @@ int BoardState::GetHVal()
 	//vector<pair<pair<int,int>, pair<int,int>>> queenPairs = {};
 	map < pair<int, int>, pair<int, int> > queenPairs;
 
-	// loop through each column and find the queen
-	for (int i = 0; i < _n; i++)
-	{
-		for (int j = 0; j < _n; j++)
-		{
-			if (_board[j][i] == true)
-			{
-				// we found the queen, now lets determine the collisions
-				// horizontal
-				for (int k = 0; k < _n; k++)
-				{
-					if (k != i && _board[j][k] == true)
-					{
-						pair<int, int> p(j, i);
-						pair<int, int> p2(j, k);
-						if (queenPairs[p] != p2 && queenPairs[p2] != p)
-							queenPairs[p] = p2;
-					}
-				}
-				// vertical (should always be zero if queens locked into own column)
-				// ( leaving it in in case I allow horizontal moves)
-				for (int k = 0; k < _n; k++)
-				{
-					if (k != j && _board[k][i] == true)
-					{
-						pair<int, int> p(j, i);
-						pair<int, int> p2(k, i);
-						if (queenPairs[p] != p2 && queenPairs[p2] != p)
-							queenPairs[p] = p2;
-					}
-				}
+	for(int p = 0; p < _qPos.size(); p++)
+	{ 
+		int j = _qPos[p].first;
+		int i = _qPos[p].second;
 
-				// diagonal 1
-				int l = j;
-				for (int k = i; k < _n && l < _n; k++)
-				{
-					if (!(j == l && i == k) && _board[l][k] == true)
-					{
-						pair<int, int> p(j, i);
-						pair<int, int> p2(l, k);
-						if (queenPairs[p] != p2 && queenPairs[p2] != p)
-							queenPairs[p] = p2;
-					}
-					l++;
-				}
-				// diagonal 1 inverse
-				l = j;
-				for (int k = i; k > 0 && l > 0; k--)
-				{
-					if (!(j == l && i == k) && _board[l][k] == true)
-					{
-						pair<int, int> p(j, i);
-						pair<int, int> p2(l, k);
-						if (queenPairs[p] != p2 && queenPairs[p2] != p)
-							queenPairs[p] = p2;
-					}
-					l--;
-				}
-				// diagonal 2
-				l = j;
-				for (int k = i; k > 0 && l < _n; k--)
-				{
-					if (!(j == l && i == k) && _board[l][k] == true)
-					{
-						pair<int, int> p(j, i);
-						pair<int, int> p2(l, k);
-						if (queenPairs[p] != p2 && queenPairs[p2] != p)
-							queenPairs[p] = p2;
-					}
-					l++;
-				}
-				// diagonal 2 inverse
-				l = j;
-				for (int k = i; k < _n && l > 0; k++)
-				{
-					if (!(j == l && i == k) && _board[l][k] == true)
-					{
-						pair<int, int> p(j, i);
-						pair<int, int> p2(l, k);
-						if (queenPairs[p] != p2 && queenPairs[p2] != p)
-							queenPairs[p] = p2;
-					}
-					l--;
-				}
-					
-				break;
+		// we found the queen, now lets determine the collisions
+		// horizontal
+		for (int k = 0; k < _n; k++)
+		{
+			if (k != i && _board[j][k] == true)
+			{
+				pair<int, int> p(j, i);
+				pair<int, int> p2(j, k);
+				if (queenPairs[p] != p2 && queenPairs[p2] != p)
+					queenPairs[p] = p2;
 			}
 		}
+		// vertical (should always be zero if queens locked into own column)
+		// ( leaving it in in case I allow horizontal moves)
+		for (int k = 0; k < _n; k++)
+		{
+			if (k != j && _board[k][i] == true)
+			{
+				pair<int, int> p(j, i);
+				pair<int, int> p2(k, i);
+				if (queenPairs[p] != p2 && queenPairs[p2] != p)
+					queenPairs[p] = p2;
+			}
+		}
+
+		// diagonal 1
+		int l = j;
+		for (int k = i; k < _n && l < _n; k++)
+		{
+			if (!(j == l && i == k) && _board[l][k] == true)
+			{
+				pair<int, int> p(j, i);
+				pair<int, int> p2(l, k);
+				if (queenPairs[p] != p2 && queenPairs[p2] != p)
+					queenPairs[p] = p2;
+			}
+			l++;
+		}
+		// diagonal 1 inverse
+		l = j;
+		for (int k = i; k > 0 && l > 0; k--)
+		{
+			if (!(j == l && i == k) && _board[l][k] == true)
+			{
+				pair<int, int> p(j, i);
+				pair<int, int> p2(l, k);
+				if (queenPairs[p] != p2 && queenPairs[p2] != p)
+					queenPairs[p] = p2;
+			}
+			l--;
+		}
+		// diagonal 2
+		l = j;
+		for (int k = i; k > 0 && l < _n; k--)
+		{
+			if (!(j == l && i == k) && _board[l][k] == true)
+			{
+				pair<int, int> p(j, i);
+				pair<int, int> p2(l, k);
+				if (queenPairs[p] != p2 && queenPairs[p2] != p)
+					queenPairs[p] = p2;
+			}
+			l++;
+		}
+		// diagonal 2 inverse
+		l = j;
+		for (int k = i; k < _n && l > 0; k++)
+		{
+			if (!(j == l && i == k) && _board[l][k] == true)
+			{
+				pair<int, int> p(j, i);
+				pair<int, int> p2(l, k);
+				if (queenPairs[p] != p2 && queenPairs[p2] != p)
+					queenPairs[p] = p2;
+			}
+			l--;
+		}
+
+		
 	}
 	return queenPairs.size();
 }
 
-BoardState BoardState::simAnnealing(BoardState s)
+BoardState BoardState::SimAnnealing(BoardState s)
 {
-	const double multiplier = 0.0001;
+	const double d = .0001;
 	const double e = 2.71828;
 	BoardState*current;
 	BoardState*next;
 	double t = 1;
 	if (_board.size() <= 0)
 		GenerateBoard();
-	current = this;
+	current = new BoardState(s.GetBoard(), s.GetQueenPositions());
 	
+	int tCtr = 0;
+	double lastT = 1;
+	const int maxT = 10;
 	while (t > 0)
 	{
-		next = new BoardState(current->_board);
+		if (tCtr >= maxT)
+			break;
+		next = new BoardState(current->_board, current->GetQueenPositions());
 		next->MoveOneQueenRandomly();
 
-		int deltaE = next->GetHVal() - current->GetHVal();
-		if (deltaE > 0)
+		int curH = current->GetHVal();
+		if (curH == 0) break;
+		int deltaE =  next->GetHVal() - curH;
+		if (deltaE < 0)
 		{
+			delete(current);
 			current = next;
 			next = nullptr;
 		}
 		else
 		{
-			double chance = pow(e, deltaE / t);
-			double roll = rand() % 100;
-			if (roll < chance*100)
+			double chance = pow(e, (deltaE*-1) / t);
+			//double roll = rand() % 100;
+			//cout << "deltaE: " << deltaE << ", t: " << t <<  ", chance: " << chance << ", chance*100: " << chance * 100 << "\n";
+			//if(chance == 1)
+			//if (roll <= chance * 100)
+			//if (chance >= 1)
+			//if (chance == 1)
+			if (chance*100 >= 87)
 			{
+				//cout << "YES" << endl;
+				delete(current);
 				current = next;
 				next = nullptr;
 			}
 		}
-		if(next != nullptr)
+		if (next != nullptr)
+		{
+			next = nullptr;
 			delete(next);
-		t *= multiplier;
+		}
+		t -= d;
+		if (t == lastT)
+			tCtr++;
+		lastT = t;
 	}
 	if(next != nullptr)
 		delete(next);
@@ -170,6 +188,23 @@ BoardState BoardState::simAnnealing(BoardState s)
 
 void BoardState::MoveOneQueenRandomly()
 {
+	int r = rand() % _qPos.size();
+	int newRow = rand() % _n;
+	// make sure we didnt roll the same exact spot
+	while(newRow == _qPos[r].first)
+		newRow = rand() % _n;
+	_board[_qPos[r].first][_qPos[r].second] = false;
+	_board[newRow][_qPos[r].second] = true;
+	_qPos[r] = pair<int, int>(newRow, _qPos[r].second);
+}
+
+vector<pair<int, int>> BoardState::GetQueenPositions()
+{
+	return _qPos;
+}
+
+vector<pair<int, int>> BoardState::FindQueenPositions()
+{
 	vector<pair<int, int>> queens;
 	for (int i = 0; i < _n; i++)
 	{
@@ -177,15 +212,11 @@ void BoardState::MoveOneQueenRandomly()
 		{
 			if (_board[j][i] == true)
 			{
-				queens.push_back(pair<int,int>(j, i));
+				queens.push_back(pair<int, int>(j, i));
 			}
 		}
 	}
-
-	int randQ = rand() % queens.size();
-	int newRow = rand() % _n;
-	_board[queens[randQ].first][queens[randQ].second] = false;
-	_board[newRow][queens[randQ].second] = true;
+	return queens;
 }
 
 BoardState::BoardState()
@@ -194,9 +225,10 @@ BoardState::BoardState()
 	GenerateBoard();
 }
 
-BoardState::BoardState(vector<vector<bool>> b)
+BoardState::BoardState(vector<vector<bool>> b, vector<pair<int, int>> pos)
 {
 	_board = b;
+	_qPos = pos;
 }
 
 
