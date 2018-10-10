@@ -8,19 +8,19 @@ class BoardState
 
 private:
 	vector<vector<bool>> _board;
-	vector<pair<int, int>> _qPos = {};
-	const int _n = 21;
-	vector<pair<int, int>> FindQueenPositions();
+	vector<pair<short, short>> _qPos = {};
+	const short _n = 21;
+	vector<pair<short, short>> FindQueenPositions();
 public:
 	BoardState();
-	BoardState(vector<vector<bool>> b, vector<pair<int, int>> pos);
+	BoardState(vector<vector<bool>> b, vector<pair<short, short>> pos);
 	~BoardState();
 	vector<vector<bool>> GetBoard();
 	void SetBoard(vector<vector<bool>> b);
 	void GenerateBoard();
-	int GetHVal();
-	BoardState SimAnnealing(BoardState s);
+	short GetHVal();
+	BoardState* SimAnnealing(BoardState s);
 	void MoveOneQueenRandomly();
-	vector<pair<int, int>> GetQueenPositions();
+	vector<pair<short, short>> GetQueenPositions();
 };
 

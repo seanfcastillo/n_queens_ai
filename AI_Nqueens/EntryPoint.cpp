@@ -31,10 +31,10 @@ int main(char* args)
 
 		//cout << "\n" << "now solving..." << endl;
 
-		BoardState solvedBoard = randBoard->SimAnnealing(*randBoard);
-		vector<vector<bool>> board = solvedBoard.GetBoard();
+		BoardState* solvedBoard = randBoard->SimAnnealing(*randBoard);
+		//vector<vector<bool>>* board = solvedBoard->GetBoard();
 		// print board
-		int finalH = solvedBoard.GetHVal();
+		int finalH = solvedBoard->GetHVal();
 		//cout << "\n hf: " << finalH << "\n";
 		if (finalH == 0) analysis.avgSuccessAnneal++;
 		delete randBoard;
