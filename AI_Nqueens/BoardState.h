@@ -14,5 +14,6 @@ public:
 	vector<vector<bool>> GetBoard();
 	void SetBoard(vector<vector<bool>> b);
 	void GenerateBoard();
+	int GetHVal();
 };
 

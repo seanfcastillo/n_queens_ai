@@ -1,10 +1,13 @@
 
 #include <iostream>
+#include <ctime>
 #include "BoardState.h"
 
 using namespace std;
 int main(char* args)
 {
+	srand(time(nullptr));
+
 	BoardState* brd = new BoardState();
 
 	for (int i = 0; i < 21; i++)
@@ -13,12 +16,9 @@ int main(char* args)
 		for (int j = 0; j < 21; j++)
 			cout << brd->GetBoard()[i][j];
 	}
+	cout << "\n" << brd->GetHVal() << "\n";
 	delete brd;
 
-	cout << "test";
-	char b;
-	cin >> b;
-	cout << b;
 	system("pause");
 	return 0;
 }
