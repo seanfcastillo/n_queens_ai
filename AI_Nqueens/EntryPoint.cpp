@@ -23,30 +23,31 @@ int main(char* args)
 	analysis.samples = numSamples;
 	for (int i = 0; i < numSamples; i++)
 	{
-		clock_t beginh1 = clock();
+		clock_t beginh2 = clock();
 		BoardState* randBoard = new BoardState();
+		BoardState* solvedBoard = randBoard->GeneticAlg();
+		
+		delete(randBoard);
+		clock_t endh2 = clock();
+
+		system("pause");
+
+		clock_t beginh1 = clock();
+		randBoard = new BoardState();
 
 		// print board 
-		cout << "\n Trial #" << i << ", h0: " << randBoard->GetHVal() << "\n";
+		cout << "\n Trial #" << i << endl;// ", h0: " << randBoard->GetHVal() << "\n";
 
-		cout << "\n" << "now solving..." << endl;
+		//cout << "\n" << "now solving..." << endl;
 
-		BoardState* solvedBoard = randBoard->SimAnnealing(*randBoard);
-		//vector<vector<bool>>* board = solvedBoard->GetBoard();
-		// print board
+		solvedBoard = randBoard->SimAnnealing();
 		int finalH = solvedBoard->GetHVal();
-		cout << "\n hf: " << finalH << "\n";
+		//cout << "\n hf: " << finalH << "\n";
 		if (finalH == 0) analysis.avgSuccessAnneal++;
-		//for (int i = 0; i < n; i++)
-		//{
-		//	cout << "\n";
-		//	for (int j = 0; j < n; j++)
-		//		cout << randBoard->GetBoard()[i][j];
-		//}
-		delete randBoard;
 		clock_t endh1 = clock();
 		analysis.avgTimeAnneal += double(endh1 - beginh1) / CLOCKS_PER_SEC;
 		//cout << "time: " << time << endl;
+		delete(randBoard);
 
 	}
 	analysis.avgSuccessAnneal /= analysis.samples;
