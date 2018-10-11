@@ -27,20 +27,27 @@ int main(char* args)
 		BoardState* randBoard = new BoardState();
 
 		// print board 
-		cout << "\n Trial #" << i << endl;// << ", h0: " << randBoard->GetHVal() << "\n";
+		cout << "\n Trial #" << i << ", h0: " << randBoard->GetHVal() << "\n";
 
-		//cout << "\n" << "now solving..." << endl;
+		cout << "\n" << "now solving..." << endl;
 
 		BoardState* solvedBoard = randBoard->SimAnnealing(*randBoard);
 		//vector<vector<bool>>* board = solvedBoard->GetBoard();
 		// print board
 		int finalH = solvedBoard->GetHVal();
-		//cout << "\n hf: " << finalH << "\n";
+		cout << "\n hf: " << finalH << "\n";
 		if (finalH == 0) analysis.avgSuccessAnneal++;
+		//for (int i = 0; i < n; i++)
+		//{
+		//	cout << "\n";
+		//	for (int j = 0; j < n; j++)
+		//		cout << randBoard->GetBoard()[i][j];
+		//}
 		delete randBoard;
 		clock_t endh1 = clock();
 		analysis.avgTimeAnneal += double(endh1 - beginh1) / CLOCKS_PER_SEC;
 		//cout << "time: " << time << endl;
+
 	}
 	analysis.avgSuccessAnneal /= analysis.samples;
 	analysis.avgTimeAnneal /= analysis.samples;

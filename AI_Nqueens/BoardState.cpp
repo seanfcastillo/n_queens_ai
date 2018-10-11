@@ -31,10 +31,10 @@ void BoardState::GenerateBoard()
 
 short BoardState::GetHVal()
 {
-	map < pair<short, short>, pair<short, short> > queenPairs;
+	map < pair<short, short>, vector<pair<short, short>> > queenPairs;
 
-	for(short p = 0; p < _qPos.size(); p++)
-	{ 
+	for (short p = 0; p < _qPos.size(); p++)
+	{
 		short j = _qPos[p].first;
 		short i = _qPos[p].second;
 
@@ -46,8 +46,11 @@ short BoardState::GetHVal()
 			{
 				pair<short, short> p(j, i);
 				pair<short, short> p2(j, k);
-				if (queenPairs[p] != p2 && queenPairs[p2] != p)
-					queenPairs[p] = p2;
+				if (find(queenPairs[p].begin(), queenPairs[p].end(), p2)== queenPairs[p].end() &&
+					find(queenPairs[p2].begin(), queenPairs[p2].end(), p) == queenPairs[p2].end())
+				{	
+					queenPairs[p].push_back(p2);
+				}
 			}
 		}
 		// vertical (should always be zero if queens locked shorto own column)
@@ -58,8 +61,11 @@ short BoardState::GetHVal()
 			{
 				pair<short, short> p(j, i);
 				pair<short, short> p2(k, i);
-				if (queenPairs[p] != p2 && queenPairs[p2] != p)
-					queenPairs[p] = p2;
+				if (find(queenPairs[p].begin(), queenPairs[p].end(), p2) == queenPairs[p].end() &&
+					find(queenPairs[p2].begin(), queenPairs[p2].end(), p) == queenPairs[p2].end())
+				{
+					queenPairs[p].push_back(p2);
+				}
 			}
 		}
 
@@ -71,8 +77,11 @@ short BoardState::GetHVal()
 			{
 				pair<short, short> p(j, i);
 				pair<short, short> p2(l, k);
-				if (queenPairs[p] != p2 && queenPairs[p2] != p)
-					queenPairs[p] = p2;
+				if (find(queenPairs[p].begin(), queenPairs[p].end(), p2) == queenPairs[p].end() &&
+					find(queenPairs[p2].begin(), queenPairs[p2].end(), p) == queenPairs[p2].end())
+				{
+					queenPairs[p].push_back(p2);
+				}
 			}
 			l++;
 		}
@@ -84,8 +93,11 @@ short BoardState::GetHVal()
 			{
 				pair<short, short> p(j, i);
 				pair<short, short> p2(l, k);
-				if (queenPairs[p] != p2 && queenPairs[p2] != p)
-					queenPairs[p] = p2;
+				if (find(queenPairs[p].begin(), queenPairs[p].end(), p2) == queenPairs[p].end() &&
+					find(queenPairs[p2].begin(), queenPairs[p2].end(), p) == queenPairs[p2].end())
+				{
+					queenPairs[p].push_back(p2);
+				}
 			}
 			l--;
 		}
@@ -97,8 +109,11 @@ short BoardState::GetHVal()
 			{
 				pair<short, short> p(j, i);
 				pair<short, short> p2(l, k);
-				if (queenPairs[p] != p2 && queenPairs[p2] != p)
-					queenPairs[p] = p2;
+				if (find(queenPairs[p].begin(), queenPairs[p].end(), p2) == queenPairs[p].end() &&
+					find(queenPairs[p2].begin(), queenPairs[p2].end(), p) == queenPairs[p2].end())
+				{
+					queenPairs[p].push_back(p2);
+				}
 			}
 			l++;
 		}
@@ -110,15 +125,27 @@ short BoardState::GetHVal()
 			{
 				pair<short, short> p(j, i);
 				pair<short, short> p2(l, k);
-				if (queenPairs[p] != p2 && queenPairs[p2] != p)
-					queenPairs[p] = p2;
+				if (find(queenPairs[p].begin(), queenPairs[p].end(), p2) == queenPairs[p].end() &&
+					find(queenPairs[p2].begin(), queenPairs[p2].end(), p) == queenPairs[p2].end())
+				{
+					queenPairs[p].push_back(p2);
+				}
 			}
 			l--;
 		}
 
 		
 	}
-	return queenPairs.size();
+	int n = 0;
+	for (const auto& pair : queenPairs)
+	{
+		n += pair.second.size();
+		//for (auto& p : pair.second)
+		//	n += p.
+
+	}
+	return n;
+	//return queenPairs.size();
 }
 
 const double d = .0001;
