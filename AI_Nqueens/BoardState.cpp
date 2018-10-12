@@ -31,7 +31,7 @@ void BoardState::GenerateBoard()
 
 short BoardState::GetHVal()
 {
-	if (_h != -1)
+	if (this != nullptr && _h != -1)
 		return _h;
 
 	map < pair<short, short>, vector<pair<short, short>> > queenPairs;
@@ -231,9 +231,10 @@ bool myfunction(BoardState* i, BoardState* j) { return (i->GetFitnessVal()>j->Ge
 BoardState * BoardState::GeneticAlg()
 {
 	// best: k =2, mutChance = 75, babyMult = 10
-	const int k = 25;
-	const int mutChance = 80;
-	const int babyMultiplier = 5;
+	// best: k =4, mutChance = 75, babyMult = 10
+	const int k = 4;
+	const int mutChance = 75;
+	const int babyMultiplier = 10;
 
 	BoardState*original = this;
 	BoardState*solution = nullptr;
@@ -243,7 +244,7 @@ BoardState * BoardState::GeneticAlg()
 	map<BoardState*, double> fitnesses;
 	double fitSum = 0;
 	double t = 1;
-	double d = .0001;
+	double d = .005;
 	// create initial population
 	for (int i = 0; i < k; i++)
 	{
@@ -269,6 +270,7 @@ BoardState * BoardState::GeneticAlg()
 		for (int i = 0; i < k; i++)
 		{
 			fitnesses[population[i]] /= fitSum;
+			//fitnesses[population[i]] = 1 - fitnesses[population[i]];
 		}
 
 		// generate offspring
@@ -281,8 +283,8 @@ BoardState * BoardState::GeneticAlg()
 			BoardState * baby = Reproduce(b1, b2);
 			tombstone.push_back(baby);
 
-			//if (rand() % 100 <= mutChance)
-			//	baby->MoveOneQueenRandomly();
+			if (rand() % 100 <= mutChance)
+				baby->MoveOneQueenRandomly();
 
 			babies[i] = baby;
 			int hVal = baby->GetHVal();
@@ -292,7 +294,7 @@ BoardState * BoardState::GeneticAlg()
 		}
 		// get 20% best babies and they are the new population
 		sort(babies.begin(), babies.end(), myfunction);
-		cout << "baby hval: " << babies[0]->GetHVal() << endl;
+		//cout << "baby hval: " << babies[0]->GetHVal() << endl;
 		for (int i = 0; i < k; i++)
 		{
 			population[i] = babies[i];
@@ -368,13 +370,13 @@ BoardState * BoardState::Reproduce(BoardState * b1, BoardState * b2)
 		smaller = b1;
 	}
 
-	//BoardState* babyBoard = new BoardState(b1->GetBoard(), b1->GetQueenPositions());//new BoardState(larger->GetBoard(), larger->GetQueenPositions());
-	BoardState* babyBoard = new BoardState(b1->GetBoard(), b1->GetQueenPositions());
+	BoardState* babyBoard = new BoardState(b1->GetBoard(), b1->GetQueenPositions());//new BoardState(larger->GetBoard(), larger->GetQueenPositions());
+	//BoardState* babyBoard = new BoardState(b1->GetBoard(), b1->GetQueenPositions());
 
-	//if (randIndex > _n / 2)
-	//	randIndex = abs(randIndex - _n);
-	vector<vector<bool>> babyBrd = b1->GetBoard();
-	vector<vector<bool>> smallerBrd = b2->GetBoard();
+	if (randIndex > _n / 2)
+		randIndex = abs(randIndex - _n);
+	vector<vector<bool>> babyBrd = larger->GetBoard();
+	vector<vector<bool>> smallerBrd = smaller->GetBoard();
 	for (int i = 0; i < _n; i++)
 	{
 		for (int j = 0; j < randIndex; j++)
@@ -431,12 +433,14 @@ vector<pair<short, short>> BoardState::FindQueenPositions()
 
 BoardState::BoardState()
 {
+	_h = -1;
 	_board = vector<vector<bool>>();
 	GenerateBoard();
 }
 
 BoardState::BoardState(vector<vector<bool>> b, vector<pair<short, short>> pos)
 {
+	_h = -1;
 	_board = b;
 	_qPos = pos;
 }
