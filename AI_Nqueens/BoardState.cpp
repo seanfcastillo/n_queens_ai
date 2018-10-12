@@ -231,9 +231,9 @@ bool myfunction(BoardState* i, BoardState* j) { return (i->GetFitnessVal()>j->Ge
 BoardState * BoardState::GeneticAlg()
 {
 	// best: k =2, mutChance = 75, babyMult = 10
-	const int k = 2;
-	const int mutChance = 75;
-	const int babyMultiplier = 10;
+	const int k = 25;
+	const int mutChance = 80;
+	const int babyMultiplier = 5;
 
 	BoardState*original = this;
 	BoardState*solution = nullptr;
@@ -243,11 +243,12 @@ BoardState * BoardState::GeneticAlg()
 	map<BoardState*, double> fitnesses;
 	double fitSum = 0;
 	double t = 1;
-	double d = .1;
+	double d = .0001;
 	// create initial population
 	for (int i = 0; i < k; i++)
 	{
 		population[i] = new BoardState();
+		///population[i]->GenerateBoard();
 		tombstone.push_back(population[i]);
 	}
 
@@ -280,8 +281,8 @@ BoardState * BoardState::GeneticAlg()
 			BoardState * baby = Reproduce(b1, b2);
 			tombstone.push_back(baby);
 
-			if (rand() % 100 <= mutChance)
-				baby->MoveOneQueenRandomly();
+			//if (rand() % 100 <= mutChance)
+			//	baby->MoveOneQueenRandomly();
 
 			babies[i] = baby;
 			int hVal = baby->GetHVal();
@@ -368,12 +369,12 @@ BoardState * BoardState::Reproduce(BoardState * b1, BoardState * b2)
 	}
 
 	//BoardState* babyBoard = new BoardState(b1->GetBoard(), b1->GetQueenPositions());//new BoardState(larger->GetBoard(), larger->GetQueenPositions());
-	BoardState* babyBoard = new BoardState(larger->GetBoard(), larger->GetQueenPositions());
+	BoardState* babyBoard = new BoardState(b1->GetBoard(), b1->GetQueenPositions());
 
-	if (randIndex > _n / 2)
-		randIndex = abs(randIndex - _n);
-	vector<vector<bool>> babyBrd = larger->GetBoard();
-	vector<vector<bool>> smallerBrd = smaller->GetBoard();
+	//if (randIndex > _n / 2)
+	//	randIndex = abs(randIndex - _n);
+	vector<vector<bool>> babyBrd = b1->GetBoard();
+	vector<vector<bool>> smallerBrd = b2->GetBoard();
 	for (int i = 0; i < _n; i++)
 	{
 		for (int j = 0; j < randIndex; j++)
