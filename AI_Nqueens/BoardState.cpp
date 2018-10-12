@@ -230,23 +230,25 @@ BoardState* BoardState::SimAnnealing()
 bool myfunction(BoardState* i, BoardState* j) { return (i->GetFitnessVal()>j->GetFitnessVal()); }
 BoardState * BoardState::GeneticAlg()
 {
-	// best: mut 85 babies k*10
-	const int k = 21;
-	const int mutChance =85;
+	// best: k =2, mutChance = 75, babyMult = 10
+	const int k = 2;
+	const int mutChance = 75;
+	const int babyMultiplier = 10;
 
 	BoardState*original = this;
 	BoardState*solution = nullptr;
-	vector<vector<BoardState*>> pointerTracker;
+	vector<BoardState*> tombstone;
 	vector<BoardState*> population(k);
-	vector<BoardState*> babies(k*10);
+	vector<BoardState*> babies(k*babyMultiplier);
 	map<BoardState*, double> fitnesses;
 	double fitSum = 0;
 	double t = 1;
-	double d = .0001;
+	double d = .1;
 	// create initial population
 	for (int i = 0; i < k; i++)
 	{
 		population[i] = new BoardState();
+		tombstone.push_back(population[i]);
 	}
 
 	while (t > 0 && solution == nullptr)
@@ -276,6 +278,7 @@ BoardState * BoardState::GeneticAlg()
 			BoardState * b2 = RandomSelection(k, fitnesses);
 
 			BoardState * baby = Reproduce(b1, b2);
+			tombstone.push_back(baby);
 
 			if (rand() % 100 <= mutChance)
 				baby->MoveOneQueenRandomly();
@@ -293,23 +296,15 @@ BoardState * BoardState::GeneticAlg()
 		{
 			population[i] = babies[i];
 		}
-		//population = babies;
-		pointerTracker.push_back(babies);
-		pointerTracker.push_back(population);
 		t -= d;
 	}
 	// cleanup
-	for (int i = 0; i < pointerTracker.size(); i++)
-		for (int j = 0; j < pointerTracker[i].size(); j++)
-			if(pointerTracker[i][j] != solution)
-				delete(pointerTracker[i][j]);
+	for (int i = 0; i < tombstone.size(); i++)
+		if(tombstone[i] != solution)
+			delete(tombstone[i]);
 
 	return solution;
-	
-
 }
-
-
 
 BoardState* BoardState::RandomSelection(int k, map<BoardState*, double> fitnesses)
 {
@@ -372,14 +367,19 @@ BoardState * BoardState::Reproduce(BoardState * b1, BoardState * b2)
 		smaller = b1;
 	}
 
+	//BoardState* babyBoard = new BoardState(b1->GetBoard(), b1->GetQueenPositions());//new BoardState(larger->GetBoard(), larger->GetQueenPositions());
 	BoardState* babyBoard = new BoardState(larger->GetBoard(), larger->GetQueenPositions());
+
 	if (randIndex > _n / 2)
 		randIndex = abs(randIndex - _n);
-	for (int i = 0; i < k; i++)
+	vector<vector<bool>> babyBrd = larger->GetBoard();
+	vector<vector<bool>> smallerBrd = smaller->GetBoard();
+	for (int i = 0; i < _n; i++)
 	{
 		for (int j = 0; j < randIndex; j++)
-			babyBoard->GetBoard()[i][j] = smaller->GetBoard()[i][j];
+			babyBrd[i][j] = smallerBrd[i][j];
 	}
+	babyBoard->SetBoard(babyBrd);
 	return babyBoard;
 }
 
